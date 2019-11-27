@@ -1,0 +1,216 @@
+package com.sunilos.proj0.testcase;
+
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+
+import com.sunilos.proj0.dto.UserDTO;
+import com.sunilos.proj0.exception.ApplicationException;
+import com.sunilos.proj0.exception.DuplicateRecordException;
+import com.sunilos.proj0.exception.RecordNotFoundException;
+import com.sunilos.proj0.service.UserServiceInt;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+
+@ContextConfiguration({"file:src/main/webapp/WEB-INF/dispatcher-servlet.xml"})
+
+public class UserTestCase {
+
+	@Autowired(required = true)
+	UserServiceInt service;
+
+	@Ignore
+	public void testAdd() throws DuplicateRecordException {
+
+		
+
+	    UserDTO dto = new UserDTO();
+
+		dto.setFirstName("Nitin");
+		dto.setLastName("Pardeshi");
+		dto.setGender("Male");
+		dto.setDob(new Date());
+		dto.setLogin("sourabhpatidar200@gmail.com");;
+		dto.setMobileNo("784132456");
+		dto.setLock(UserDTO.ACTIVE);
+		dto.setPassword("123456");
+		dto.setRoleId(1);
+		dto.setUnSuccessfulLogin(0);
+
+		dto.setCreatedBy("a");
+		dto.setModifiedBy("s");
+		dto.setModifiedDatetime(new Timestamp(new Date().getTime()));
+		dto.setCreatedDatetime(new Timestamp(new Date().getTime()));
+
+		service.add(dto);
+        System.out.println("Successfully Added");
+
+	}
+
+	@Ignore
+	public void testFindByPK() throws RecordNotFoundException {
+		long pk = 1;
+
+		UserDTO dto = service.findByPK(pk);
+		System.out.println("Record Found");
+		System.out.println(dto.getId());
+		System.out.println(dto.getFirstName());
+		System.out.println(dto.getLastName());
+		System.out.println(dto.getGender());
+		System.out.println(dto.getMobileNo());
+		System.out.println(dto.getLogin());
+
+	}
+	@Ignore
+	public void testUpdate() throws DuplicateRecordException, RecordNotFoundException
+	{
+		long pk=1;
+		UserDTO dto=service.findByPK(pk);
+		
+		dto.setCreatedBy("Nitin");
+		dto.setModifiedBy("pardeshi");
+		dto.setLogin("sourabhpatidar200@gmail.com");
+		service.update(dto);
+		System.out.println("Successfully Updated");
+		
+		
+	}
+	@Ignore
+	public void testDelete() throws RecordNotFoundException
+	{
+		 long id=1;
+	     service.delete(id);
+	     System.out.println("successfully Deleted");
+	}
+	@Ignore
+	public void testfindByLogin() throws RecordNotFoundException
+	{
+		String login="sourabhpatidar200@gmail.com";
+		UserDTO dto=service.findByLogin(login);
+		if(dto!=null)
+		{
+			System.out.println("Record Found");
+			System.out.println(dto.getId());
+			System.out.println(dto.getFirstName());
+			System.out.println(dto.getLastName());
+			System.out.println(dto.getGender());
+			System.out.println(dto.getMobileNo());
+			System.out.println(dto.getLogin());
+		}
+	}
+	
+	@Ignore
+	public void testSearch()
+	{
+		String firstName="Nitin";
+		UserDTO dto=new UserDTO();
+		//dto.setFirstName(firstName);
+        dto.setLogin("sour");
+		List list=service.search(dto);
+		
+		Iterator it=list.iterator();
+		while(it.hasNext())
+		{
+			System.out.println("In Iterator");
+			dto=(UserDTO)it.next();
+			System.out.println("Record Found");
+			System.out.println(dto.getId());
+			System.out.println(dto.getFirstName());
+			System.out.println(dto.getLastName());
+			System.out.println(dto.getGender());
+			System.out.println(dto.getMobileNo());
+			System.out.println(dto.getLogin());
+	    }
+			
+	}
+	@Ignore
+	public void testRegisterUser() throws DuplicateRecordException
+	{
+		 UserDTO dto = new UserDTO();
+
+			dto.setFirstName("Nitin");
+			dto.setLastName("Pardeshi");
+			dto.setGender("Male");
+			dto.setDob(new Date());
+			dto.setLogin("sourabhpatidar200@gmail.com");;
+			dto.setMobileNo("784132456");
+			dto.setLock(UserDTO.ACTIVE);
+			dto.setPassword("123456");
+			dto.setRoleId(1);
+			dto.setUnSuccessfulLogin(0);
+
+			dto.setCreatedBy("a");
+			dto.setModifiedBy("s");
+			dto.setModifiedDatetime(new Timestamp(new Date().getTime()));
+			dto.setCreatedDatetime(new Timestamp(new Date().getTime()));
+
+			service.registerUser(dto);
+	        System.out.println("Successfully Registered");
+
+	}
+	
+	@Test
+	public void testChangePassword() throws DuplicateRecordException
+	{
+		String oldPassword="123456";
+		String newPassword="654321";
+		long id=1;
+		
+		boolean flag=service.changePassword(id, oldPassword, newPassword);
+		assertTrue("password changed Unsuccessful",flag);
+		
+	}
+	
+	@Ignore
+	public void testAuthenticate()
+	{
+		UserDTO dto=new UserDTO();
+		dto.setLogin("sourabhpatidar200@gmail.com");
+		dto.setPassword("123456");
+		
+		UserDTO newUser=service.authenticate(dto);
+		assertFalse("Not A Valid User", newUser==null);
+		if(newUser!=null)
+		{
+			System.out.println("Valid User");
+		}
+	}
+	@Ignore
+	public void testFotgetPassword() throws ApplicationException
+	{
+		String login="sourabhpatidar200@gmail.com";
+		
+		boolean flag=service.forgetPassword(login);
+		assertTrue("LoginId is Incorrect",flag);
+		
+	}
+    @Ignore
+	public void resetPassword() throws ApplicationException, RecordNotFoundException{
+	UserDTO dto = new UserDTO(); 
+	boolean pass=true;
+    
+        dto = service.findByLogin("sourabhpatidar200@gmail.com"); 
+        if (dto != null) { 
+             pass = service.resetPassword("sourabhpatidar200@gmail.com"); 
+            if (pass = false) { 
+                System.out.println("Test resetpassword fail"); 
+            } 
+           
+        }
+       
+}
+}
